@@ -458,6 +458,7 @@
           <button id="buyButton" type="button">拍下套餐</button>
           <div class="details">
             <span>收款资产：<strong id="assetLabel">LGNS / Polygon</strong></span>
+            <span>客服 QQ：<strong id="customerQq">3919867749</strong></span>
             <span>交付方式：付款确认后显示链接</span>
           </div>
         </div>
@@ -483,7 +484,7 @@
               <button class="copy" id="copyAddress" type="button">复制</button>
             </div>
           </div>
-          <p class="hint">请确认网络为 Polygon，并按页面或客服确认的金额付款。付款完成后点击下方按钮查看交付链接。</p>
+          <p class="hint">请确认网络为 Polygon，并按页面或客服确认的金额付款。客服 QQ：<strong id="modalCustomerQq">3919867749</strong>。付款完成后点击下方按钮查看交付链接。</p>
           <div class="step-actions">
             <button id="paidButton" type="button">我已付款，查看链接</button>
             <button class="secondary" id="cancelButton" type="button">稍后再付</button>
@@ -505,6 +506,7 @@
       priceLabel: "按客服确认金额",
       assetLabel: "LGNS / Polygon",
       networkLabel: "Polygon",
+      customerQq: "3919867749",
       walletAddress: "0x733e28b38960d710b5d410c72bf4974db8823fd6",
       qrImage: "assets/qr_code_only.png",
       deliveryLink: "https://www.google.com/search?q=index.h"
@@ -525,6 +527,8 @@
       document.getElementById("priceLabel").textContent = APP_CONFIG.priceLabel;
       document.getElementById("assetLabel").textContent = APP_CONFIG.assetLabel;
       document.getElementById("networkLabel").textContent = APP_CONFIG.networkLabel;
+      document.getElementById("customerQq").textContent = APP_CONFIG.customerQq;
+      document.getElementById("modalCustomerQq").textContent = APP_CONFIG.customerQq;
       document.getElementById("walletAddress").textContent = APP_CONFIG.walletAddress;
       document.getElementById("paymentQr").src = APP_CONFIG.qrImage;
       document.querySelector(".product-visual img").src = APP_CONFIG.qrImage;
