@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>网络服务订阅</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #15171a;
+      --muted: #68707c;
+      --line: #dde2e8;
+      --primary: #1163ff;
+      --primary-dark: #0b48bd;
+      --success: #11845b;
+      --warning: #8a5a00;
+      --shadow: 0 18px 50px rgba(21, 23, 26, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.86), rgba(246,247,249,0.96)),
+        url("assets/qr_code_only.png") center 88px / 520px auto no-repeat;
+      color: var(--text);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(246, 247, 249, 0.84);
+      backdrop-filter: blur(14px);
+    }
+
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 44px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 34px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 8px;
+      background: #15171a;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .status {
+      color: var(--success);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) 390px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .hero {
+      padding-top: 34px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 720px;
+      font-size: clamp(36px, 6vw, 72px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 640px;
+      margin: 20px 0 0;
+      color: #3f4751;
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      max-width: 640px;
+      margin-top: 24px;
+      padding: 14px 16px;
+      border: 1px solid #f0d58a;
+      border-radius: 8px;
+      background: #fff8e7;
+      color: var(--warning);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .product {
+      background: var(--panel);
+      border: 1px solid rgba(221, 226, 232, 0.86);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .product-visual {
+      display: grid;
+      min-height: 210px;
+      place-items: center;
+      background: #10151f;
+    }
+
+    .product-visual img {
+      width: 156px;
+      height: 156px;
+      border-radius: 8px;
+      background: #fff;
+      object-fit: contain;
+      padding: 10px;
+    }
+
+    .product-body {
+      padding: 24px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #3f4751;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f9fafb;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 22px 0 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .price strong {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .price span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    button,
+    a.delivery-link {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      text-decoration: none;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    button:hover,
+    a.delivery-link:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .secondary:hover {
+      background: #f4f6f8;
+    }
+
+    .details {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(7, 10, 18, 0.58);
+      z-index: 10;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .dialog {
+      width: min(430px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.26);
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dialog-head h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .close {
+      width: 34px;
+      min-height: 34px;
+      border-radius: 8px;
+      background: #f0f2f4;
+      color: #15171a;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .dialog-body {
+      padding: 20px;
+    }
+
+    .qr-box {
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .qr-box img {
+      display: block;
+      width: min(100%, 320px);
+      aspect-ratio: 1;
+      object-fit: contain;
+    }
+
+    .field {
+      margin-top: 16px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .wallet-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 92px;
+      gap: 10px;
+    }
+
+    .wallet {
+      min-width: 0;
+      padding: 13px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #38404a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .copy {
+      min-height: 44px;
+      border: 1px solid #cfd6df;
+      background: #fff;
+      color: #15171a;
+      font-size: 14px;
+    }
+
+    .copy:hover {
+      background: #f4f6f8;
+    }
+
+    .step-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .hint {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .success-panel {
+      display: none;
+      padding: 16px;
+      border: 1px solid #b9e4d3;
+      border-radius: 8px;
+      background: #eefaf6;
+      color: #0b6547;
+      line-height: 1.6;
+    }
+
+    .success-panel.show {
+      display: block;
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        width: min(100% - 24px, 640px);
+        padding-top: 22px;
+      }
+
+      header {
+        margin-bottom: 18px;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .hero {
+        padding-top: 10px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      body {
+        background-size: 420px auto;
+      }
+
+      .status {
+        display: none;
+      }
+
+      .product-body,
+      .dialog-body {
+        padding: 18px;
+      }
+
+      .wallet-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">N</div>
+        <span>网络服务订阅</span>
+      </div>
+      <div class="status">支持 Polygon 资产收款</div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <h1 id="page-title">数字网络服务订阅</h1>
+        <p class="lead">拍下后使用链上地址完成付款，确认付款后显示服务链接。请只在符合当地法律法规和平台规则的场景中使用。</p>
+        <div class="notice">
+          <strong>提示</strong>
+          <span>当前页面是静态演示版，不会自动核验链上到账；正式售卖建议接入后端订单号、到账监听和人工风控。</span>
+        </div>
+      </section>
+
+      <aside class="product" aria-label="订阅商品">
+        <div class="product-visual">
+          <img src="assets/qr_code_only.png" alt="Polygon 收款二维码">
+        </div>
+        <div class="product-body">
+          <div class="tag-row">
+            <span class="tag" id="networkLabel">Polygon</span>
+            <span class="tag">加密资产付款</span>
+            <span class="tag">付款后交付</span>
+          </div>
+          <h2 id="productName">标准订阅套餐</h2>
+          <div class="price">
+            <strong id="priceLabel">按客服确认金额</strong>
+            <span>一次性付款</span>
+          </div>
+          <button id="buyButton" type="button">拍下套餐</button>
+          <div class="details">
+            <span>收款资产：<strong id="assetLabel">LGNS / Polygon</strong></span>
+            <span>交付方式：付款确认后显示链接</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="dialog">
+      <div class="dialog-head">
+        <h3 id="modalTitle">扫码付款</h3>
+        <button class="close" id="closeModal" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="dialog-body">
+        <div id="paymentStep">
+          <div class="qr-box">
+            <img id="paymentQr" src="assets/qr_code_only.png" alt="付款二维码">
+          </div>
+          <div class="field">
+            <label for="walletAddress">收款地址</label>
+            <div class="wallet-row">
+              <div class="wallet" id="walletAddress">0x733e28b38960d710b5d410c72bf4974db8823fd6</div>
+              <button class="copy" id="copyAddress" type="button">复制</button>
+            </div>
+          </div>
+          <p class="hint">请确认网络为 Polygon，并按页面或客服确认的金额付款。付款完成后点击下方按钮查看交付链接。</p>
+          <div class="step-actions">
+            <button id="paidButton" type="button">我已付款，查看链接</button>
+            <button class="secondary" id="cancelButton" type="button">稍后再付</button>
+          </div>
+        </div>
+
+        <div class="success-panel" id="deliveryStep">
+          <strong>付款确认已提交</strong>
+          <p>下面是服务链接。正式上线前请把它换成你的真实交付地址，并建议改为后端到账后自动发放。</p>
+          <a class="delivery-link" id="deliveryLink" href="#" target="_blank" rel="noopener">打开服务链接</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APP_CONFIG = {
+      productName: "标准订阅套餐",
+      priceLabel: "按客服确认金额",
+      assetLabel: "LGNS / Polygon",
+      networkLabel: "Polygon",
+      walletAddress: "0x733e28b38960d710b5d410c72bf4974db8823fd6",
+      qrImage: "assets/qr_code_only.png",
+      deliveryLink: "https://www.google.com/search?q=index.h"
+    };
+
+    const modal = document.getElementById("checkoutModal");
+    const buyButton = document.getElementById("buyButton");
+    const closeModal = document.getElementById("closeModal");
+    const cancelButton = document.getElementById("cancelButton");
+    const paidButton = document.getElementById("paidButton");
+    const copyAddress = document.getElementById("copyAddress");
+    const paymentStep = document.getElementById("paymentStep");
+    const deliveryStep = document.getElementById("deliveryStep");
+    const deliveryLink = document.getElementById("deliveryLink");
+
+    function fillPage() {
+      document.getElementById("productName").textContent = APP_CONFIG.productName;
+      document.getElementById("priceLabel").textContent = APP_CONFIG.priceLabel;
+      document.getElementById("assetLabel").textContent = APP_CONFIG.assetLabel;
+      document.getElementById("networkLabel").textContent = APP_CONFIG.networkLabel;
+      document.getElementById("walletAddress").textContent = APP_CONFIG.walletAddress;
+      document.getElementById("paymentQr").src = APP_CONFIG.qrImage;
+      document.querySelector(".product-visual img").src = APP_CONFIG.qrImage;
+      deliveryLink.href = APP_CONFIG.deliveryLink;
+    }
+
+    function openCheckout() {
+      paymentStep.style.display = "block";
+      deliveryStep.classList.remove("show");
+      modal.classList.add("open");
+      closeModal.focus();
+    }
+
+    function closeCheckout() {
+      modal.classList.remove("open");
+      buyButton.focus();
+    }
+
+    async function copyWalletAddress() {
+      try {
+        await navigator.clipboard.writeText(APP_CONFIG.walletAddress);
+        copyAddress.textContent = "已复制";
+      } catch (error) {
+        copyAddress.textContent = "复制失败";
+      }
+      window.setTimeout(() => {
+        copyAddress.textContent = "复制";
+      }, 1500);
+    }
+
+    fillPage();
+
+    buyButton.addEventListener("click", openCheckout);
+    closeModal.addEventListener("click", closeCheckout);
+    cancelButton.addEventListener("click", closeCheckout);
+    copyAddress.addEventListener("click", copyWalletAddress);
+
+    paidButton.addEventListener("click", () => {
+      paymentStep.style.display = "none";
+      deliveryStep.classList.add("show");
+    });
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeCheckout();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("open")) {
+        closeCheckout();
+      }
+    });
+  </script>
+</body>
+</html>
